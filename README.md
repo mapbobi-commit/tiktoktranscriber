@@ -13,9 +13,9 @@ Transcribes TikTok videos into text format.
 
 ### Virtual environment
 
-- `bash /> python -m venv .venv`
-- `bash /> source .venv/bin/activate`
-- `bash /> python -m pip install -r requirements.txt`
+- `/> python -m venv .venv`
+- `/> source .venv/bin/activate`
+- `/> python -m pip install -r requirements.txt`
 
 ### Config
 
@@ -36,4 +36,4 @@ asyncio.set_event_loop(loop)
 
 ### Run
 
-- `bash src/> gradio app.py
+- `src/> gradio app.py`
