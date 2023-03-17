@@ -27,7 +27,7 @@ Transcribes TikTok videos into text format.
 
 Gradio doesn't run without this modification but you can still manually call the functions in `src/transcriber`.
 
-- at /Users/maximekiriakov/Documents/Omnithink/dev/scripts/tiktok_audio_transcription/.venv/lib/python3.11/site-packages/TikTokApi/tiktok.py:205 add:
+- at .venv/lib/python3.11/site-packages/TikTokApi/tiktok.py:205 add:
 
 ```
 loop = asyncio.new_event_loop()
