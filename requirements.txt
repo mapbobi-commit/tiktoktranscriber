@@ -1,0 +1,3 @@
+google-cloud-speech
+gradio
+TikTokApi
