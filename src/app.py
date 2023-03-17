@@ -1,5 +1,3 @@
-import asyncio
-
 import gradio as gr
 
 from transcriber import (convert_videos_to_audio_files, download_videos,
@@ -28,4 +26,4 @@ with gr.Blocks() as demo:
     button.click(fn=transcribe, inputs=inp, outputs=out)
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(share=True)
