@@ -16,6 +16,8 @@ Transcribes TikTok videos into text format.
 - `/> python -m venv .venv`
 - `/> source .venv/bin/activate`
 - `/> python -m pip install -r requirements.txt`
+- `/> playwright install`
+- `/> playwright install-deps`
 
 ### Config
 
