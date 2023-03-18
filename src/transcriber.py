@@ -41,19 +41,19 @@ def download_videos(urls):
             except:
                 logger.error("Error downloading video. Skipping...")
 
-    logger.info("Downloading complete!\n")
+    logger.info("Downloading finished!\n")
 
     return v_ids
 
 
 def convert_videos_to_audio_files(v_ids):
     for v_id in v_ids:
-        command = f"ffmpeg -y -loglevel quiet -i ../data/videos/{v_id}.mp4 -vn ../data/audio/{v_id}.wav"
-
         logger.info(f"Converting {v_id}.mp4")
+        
+        command = f"ffmpeg -y -loglevel quiet -i ../data/videos/{v_id}.mp4 -vn ../data/audio/{v_id}.wav"
         subprocess.call(command, shell=True)
 
-    logger.info("Conversion complete!\n")
+    logger.info("Conversion finished!\n")
 
     return v_ids
 
@@ -81,7 +81,6 @@ def transcribe_audio(v_ids):
         
     config = cloud_speech.RecognitionConfig(auto_decoding_config={})
     
-    videos = []
     transcriptions = []
     for v_id in v_ids:
         logger.info(f"Transcribing {v_id}.wav")
@@ -89,21 +88,23 @@ def transcribe_audio(v_ids):
         audio_file = f"../data/audio/{v_id}.wav"
         with open(audio_file, "rb") as f:
             content = f.read()
-            videos.append(content)
 
-        request = cloud_speech.RecognizeRequest(
-            recognizer=recognizer.name, config=config, content=content
-        )
-        
-        response = client.recognize(request=request)
-        results = [result.alternatives[0].transcript for result in response.results]
-        
-        with open(f"../data/transcripts/{v_id}.txt", "w") as output:
-            text = "".join(results)
+        try:
+            request = cloud_speech.RecognizeRequest(
+                recognizer=recognizer.name, config=config, content=content
+            )
             
-            transcriptions.append(text)
-            output.write(text)
+            response = client.recognize(request=request)
+            results = [result.alternatives[0].transcript for result in response.results]
+            
+            with open(f"../data/transcripts/{v_id}.txt", "w") as output:
+                text = "".join(results)
                 
-    logger.info("Transcription complete!\n")
+                transcriptions.append(text)
+                output.write(text)
+        except:
+            logger.error("File too big. Skipping...")
+                
+    logger.info("Transcription finished!\n")
     
     return transcriptions
