@@ -6,8 +6,8 @@ Transcribes TikTok videos into text format.
 
 - python
 - pip
-- ffmpeg [https://ffmpeg.org/]
-- gcloud service account key [https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-gcloud]
+- [ffmpeg](https://ffmpeg.org/)
+- [gcloud service account key](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-gcloud)
 
 ## How to run
 
