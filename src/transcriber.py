@@ -24,6 +24,18 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
+def videos_location(id):
+    return f"../data/videos/{id}.mp4"
+
+
+def audio_location(id):
+    return f"../data/audio/{id}.wav"
+
+
+def transcriptions_location(id):
+    return f"../data/transcripts/{id}.txt"
+
+
 def download_videos(urls):
     v_ids = [x.strip().split("/")[-1] for x in urls.split(",")]
 
@@ -35,8 +47,8 @@ def download_videos(urls):
             logger.info(f"Downloading video with id: {v_id}")
             try:
                 video_bytes = api.video(id=v_id).bytes()
-                
-                with open(f"../data/videos/{v_id}.mp4", "wb") as output:
+
+                with open(videos_location(v_id), "wb") as output:
                     output.write(video_bytes)
             except:
                 logger.error("Error downloading video. Skipping...")
@@ -49,8 +61,8 @@ def download_videos(urls):
 def convert_videos_to_audio_files(v_ids):
     for v_id in v_ids:
         logger.info(f"Converting {v_id}.mp4")
-        
-        command = f"ffmpeg -y -loglevel quiet -i ../data/videos/{v_id}.mp4 -vn ../data/audio/{v_id}.wav"
+
+        command = f"ffmpeg -y -loglevel quiet -i {videos_location(v_id)} -vn {audio_location(v_id)}"
         subprocess.call(command, shell=True)
 
     logger.info("Conversion finished!\n")
@@ -61,50 +73,51 @@ def convert_videos_to_audio_files(v_ids):
 def transcribe_audio(v_ids):
     # Initialize client
     client = SpeechClient().from_service_account_json(GCLOUD_JSON)
-   
+    config = cloud_speech.RecognitionConfig(auto_decoding_config={})
+
     recognizer_id = "omnirecogniser51"
 
-    # Get/Create Recognizer    
+    # Get/Create Recognizer
     try:
-       request = cloud_speech.GetRecognizerRequest(name=f"projects/{GCLOUD_PROJECT}/locations/global/recognizers/{recognizer_id}")
-       recognizer = client.get_recognizer(request=request)
+        request = cloud_speech.GetRecognizerRequest(
+            name=f"projects/{GCLOUD_PROJECT}/locations/global/recognizers/{recognizer_id}"
+        )
+        recognizer = client.get_recognizer(request=request)
     except:
         request = cloud_speech.CreateRecognizerRequest(
             parent=f"projects/{GCLOUD_PROJECT}/locations/global",
             recognizer_id=recognizer_id,
-            recognizer=cloud_speech.Recognizer(language_codes=["en-US"], model="latest_long"),
-        )    
+            recognizer=cloud_speech.Recognizer(
+                language_codes=["en-US"], model="latest_long"
+            ),
+        )
 
         operation = client.create_recognizer(request=request)
         recognizer = operation.result()
-        
-        
-    config = cloud_speech.RecognitionConfig(auto_decoding_config={})
-    
+
     transcriptions = []
     for v_id in v_ids:
         logger.info(f"Transcribing {v_id}.wav")
-        
-        audio_file = f"../data/audio/{v_id}.wav"
-        with open(audio_file, "rb") as f:
+
+        with open(audio_location(v_id), "rb") as f:
             content = f.read()
 
         try:
             request = cloud_speech.RecognizeRequest(
                 recognizer=recognizer.name, config=config, content=content
             )
-            
+
             response = client.recognize(request=request)
             results = [result.alternatives[0].transcript for result in response.results]
-            
-            with open(f"../data/transcripts/{v_id}.txt", "w") as output:
+
+            with open(transcriptions_location(v_id), "w") as output:
                 text = "".join(results)
-                
+
                 transcriptions.append(text)
                 output.write(text)
         except:
             logger.error("File too big. Skipping...")
-                
+
     logger.info("Transcription finished!\n")
-    
+
     return transcriptions
