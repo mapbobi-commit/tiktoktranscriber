@@ -18,7 +18,8 @@ def transcribe(urls):
 with gr.Blocks() as demo:
     gr.Markdown(
     """
-    ## Enter TikTok URLs seprated by commas to transcribe the videos! Video needs to be public and less than 1 minute long.
+    ## Enter TikTok URLs seprated by commas to transcribe the videos!
+    Video needs to be public and less than 1 minute long.
     """
     )
     inp = gr.Textbox(placeholder="url, url, url...", label="TikTok URLs")
